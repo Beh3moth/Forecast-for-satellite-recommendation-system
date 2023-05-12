@@ -26,3 +26,17 @@ class Interface:
             return output_file
         else:
             return "Failed to retrieve weather forecast."
+
+
+interface = Interface(controller)
+
+aoi = "40.7128,-74.0060"  # Esempio di AOI ( si può usare parametrica)
+
+
+# Ottieni le condizioni meteo come JSON
+weather_json = interface.getJson(aoi)
+print(weather_json)
+
+# Ottieni il forecast meteo come file GeoJSON
+forecast_file = interface.getWeatherForecast(aoi)
+print(f"Forecast saved as: {forecast_file}")
