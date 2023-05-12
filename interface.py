@@ -27,16 +27,16 @@ class Interface:
         else:
             return "Failed to retrieve weather forecast."
 
-
-interface = Interface(controller)
-
-aoi = "40.7128,-74.0060"  # Esempio di AOI ( si può usare parametrica)
+#api_key = "YOUR_API_KEY"  # Inserisci qui la tua chiave API per il servizio meteo
+#controller = WeatherController(api_key)
+#interface = Interface(controller)
+#aoi = "40.7128,-74.0060"  # Esempio di AOI ( si può usare parametrica)
 
 
 # Ottieni le condizioni meteo come JSON
-weather_json = interface.getJson(aoi)
-print(weather_json)
+#weather_json = interface.getJson(aoi)
+#print(weather_json)
 
 # Ottieni il forecast meteo come file GeoJSON
-forecast_file = interface.getWeatherForecast(aoi)
-print(f"Forecast saved as: {forecast_file}")
+#forecast_file = interface.getWeatherForecast(aoi)
+#print(f"Forecast saved as: {forecast_file}")
