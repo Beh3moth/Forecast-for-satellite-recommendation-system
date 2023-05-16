@@ -1,7 +1,7 @@
 import json
 from geoHashConverter import GeoHashConverter
 from dataHistory import DataHistory
-from apiFetcher import ApiFetcher
+from openMeteoFetcher import OpenMeteoFetcher
 
 
 class Controller:
@@ -15,9 +15,11 @@ class Controller:
 
         hash_list = geohash_converter.convert_polygon_to_geohash(polygon_geom)
 
+        print(hash_list)
+
         # at this point we can ask for meteo data through the API interface
 
-        api = ApiFetcher()
+        api = OpenMeteoFetcher()
 
         response = api.get_weather_forecast(hash_list)
 
