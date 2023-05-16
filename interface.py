@@ -15,7 +15,6 @@ class Interface:
     def get_weather_forecast(aoi):
         # conversion in json?
         # json_aoi = json.loads(aoi)
-
         # Check on the aoi?
 
         # Create the controller

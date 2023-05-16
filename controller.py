@@ -1,7 +1,6 @@
 import json
 from geoHashConverter import GeoHashConverter
-from dataHistory import DataHistory
-from openMeteoFetcher import OpenMeteoFetcher
+from meteoThread import MeteoThread
 
 
 class Controller:
@@ -15,17 +14,9 @@ class Controller:
 
         hash_list = geohash_converter.convert_polygon_to_geohash(polygon_geom)
 
-        print(hash_list)
-
         # at this point we can ask for meteo data through the API interface
 
-        api = OpenMeteoFetcher()
-
-        response = api.get_weather_forecast(hash_list)
-
-        # at this point we can create the DataHistory class initiating its geo data frame
-        data_history = DataHistory(response)
-
-        output = 1
+        meteo_thread = MeteoThread()
+        output = meteo_thread.get_dataframe(hash_list)
 
         return output
