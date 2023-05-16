@@ -6,14 +6,15 @@ class Controller:
     def __init__(self):
         pass
 
-    def startTheProcessingMethod(polygon_geom):
+    def start_processing(polygon_geom):
 
         # the first thing to do is to convert the AOI in a geoHash string
-        geoHashConverter = GeoHashConverter()
+        geohash_converter = GeoHashConverter()
 
-        hashList = geoHashConverter.convertPolygonToGeoHash(polygon_geom)
+        hash_list = geohash_converter.convert_polygon_to_geohash(polygon_geom)
 
-        output = aoi
+        output = 1
+
         return output
 
 

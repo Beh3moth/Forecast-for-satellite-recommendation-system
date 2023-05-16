@@ -30,7 +30,7 @@ class Interface:
         controller = Controller()
 
         # Call the method of the controller that takes the aoi as input and returns the final output.
-        return controller.startTheProcessingMethod(polygon_geom)
+        return controller.start_processing(polygon_geom)
 
 
 
