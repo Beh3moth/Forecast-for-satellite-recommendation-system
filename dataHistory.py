@@ -2,7 +2,10 @@ import geopandas as gp
 
 
 class DataHistory:
-    def __init__(self):
-        pass
 
-    geoDataFrame = gp.GeoDataFrame()
+    geo_data_frame = gp.GeoDataFrame()
+
+    def __init__(self, hash_list):
+        self.geo_data_frame['geometry'] = hash_list
+
+

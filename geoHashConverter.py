@@ -8,6 +8,7 @@ class GeoHashConverter:
     def __init__(self):
         pass
 
+    @staticmethod
     def convert_polygon_to_geohash(polygon_geom):
 
         hash_list = geohash.encode(polygon_geom)
