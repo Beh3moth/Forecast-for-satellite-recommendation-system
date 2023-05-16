@@ -1,5 +1,9 @@
 import json
 
+from shapely import Polygon
+
+from controller import Controller
+
 
 class Interface:
     def __init__(self):
@@ -10,7 +14,13 @@ class Interface:
     # I have specified the type of the aoi and the return's type as str, but it could be different or omitted.
     # There could be also the need of some kind of check on the aoi (it could be empty ecc).
     # this method is static because it doesn't modify any instance or class attributes.
-    def getWeatherForecast(aoi: str) -> str:
+    def get_weather_forecast(aoi):
+
+        lat_point_list = [50.854457, 52.518172, 50.072651, 48.853033, 50.854457]
+        lon_point_list = [4.377184, 13.407759, 14.435935, 2.349553, 4.377184]
+
+        polygon_geom = Polygon(zip(lon_point_list, lat_point_list))
+
         # conversion in json?
         json_aoi = json.loads(aoi)
 
@@ -20,17 +30,7 @@ class Interface:
         controller = Controller()
 
         # Call the method of the controller that takes the aoi as input and returns the final output.
-        return controller.callTheProcessingMethod(json_aoi)
-
-
-class Controller:
-    def __init__(self):
-        pass
-
-    @staticmethod
-    def callTheProcessingMethod(json_aoi):
-        # my code
-        return json_aoi
+        return controller.startTheProcessingMethod(polygon_geom)
 
 
 
