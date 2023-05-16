@@ -20,15 +20,13 @@ class MeteoThread:
         id = 1
         # condition for updating the dataframe
         response = self.openMeteoFetcher.get_weather_forecast(self.geohash_list)[0]
+        
+        for x in response['hourly']:
+            self.data_frame[str(x)] = response['hourly'][str(x)]
 
-        # self.data_frame['time'] = pd.to_datetime(response['hourly_units']['time']).strftime('%Y-%m-%dT%H:%M:%S')
-        self.data_frame['time'] = response['hourly']['time']
         self.data_frame['AOI_ID'] = id
         self.data_frame['EventID'] = id
-        self.data_frame['temperature'] = response['hourly']['temperature_2m']
-        self.data_frame['precipitationProbability'] = response['hourly']['precipitation_probability']
-        self.data_frame['cloudcover'] = response['hourly']['cloudcover']
-        self.data_frame['day/night'] = response['hourly']['is_day']
+        
         # time.sleep(3*60*60)
 
     def get_dataframe(self, geohash_list):
