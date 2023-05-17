@@ -15,19 +15,18 @@ class MeteoThread:
 
     def run(self):
 
-        # while True:
+        while True:
 
-        id = 1
-        # condition for updating the dataframe
-        response = self.openMeteoFetcher.get_weather_forecast(self.geohash_list)[0]
-        
-        for x in response['hourly']:
-            self.data_frame[str(x)] = response['hourly'][str(x)]
+            # condition for updating the dataframe
+            response = self.openMeteoFetcher.get_weather_forecast(self.geohash_list)[0]
 
-        self.data_frame['AOI_ID'] = id
-        self.data_frame['EventID'] = id
+            for x in response['hourly']:
+                self.data_frame[str(x)] = response['hourly'][str(x)]
+            temporary_id = 1
+            self.data_frame['AOI_ID'] = temporary_id
+            self.data_frame['EventID'] = temporary_id
         
-        # time.sleep(3*60*60)
+            time.sleep(3*60*60)
 
     def get_dataframe(self, geohash_list):
 
@@ -39,6 +38,5 @@ class MeteoThread:
 
         if not meteo_thread.is_alive():
             meteo_thread.start()
-            meteo_thread.join()
 
         return self.data_frame

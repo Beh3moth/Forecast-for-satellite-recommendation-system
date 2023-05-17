@@ -1,25 +1,28 @@
+import json
 import geopandas
 import geohash
 from shapely.geometry import Polygon
-from shapely.geometry import Point
-import geopandas.tools as tools
 
 
 class GeoHashConverter:
-    
+
     num_rows = 5
     num_cols = 5
+    geo_hash_dim = 2
 
     def __init__(self):
-        pass
+        config_file = open('config.json')
+        config_parser = json.load(config_file)
+        self.num_cols = config_parser["granularityParameters"]["granularity"]
+        self.num_rows = config_parser["granularityParameters"]["granularity"]
 
-    def convert_polygon_to_geohash(self, polygon_geom):
+    # def method_fra(self, polygon_geom):
+    #     rectangle = geopandas.GeoDataFrame(geometry=geopandas.GeoSeries(polygon_geom).envelope)
+    #     return granularity
 
-        hash_list = set()
+    def get_centroids(self, polygon_geom):
 
-        x = geopandas.GeoSeries(polygon_geom)
-              
-        rectangle = geopandas.GeoDataFrame(geometry=x.envelope)
+        rectangle = geopandas.GeoDataFrame(geometry=geopandas.GeoSeries(polygon_geom).envelope)
 
         # Define the number of rows and columns for the grid
         num_rows = self.num_rows
@@ -47,14 +50,22 @@ class GeoHashConverter:
 
         # Perform the spatial intersection to obtain the divided sub-areas
         divided_areas = geopandas.overlay(sub_areas_gdf, rectangle, how='intersection')
-            
+
         centroids = set()
 
-        for index, row in divided_areas.iterrows():    
-            if(polygon_geom.intersects(row.geometry).bool()==True):
+        for index, row in divided_areas.iterrows():
+            if polygon_geom.intersects(row.geometry).bool():
                 centroids.add(row.geometry.centroid)
-    
+
+        return centroids
+
+    def convert_polygon_to_geohash(self, polygon_geom):
+
+        hash_list = set()
+
+        centroids = self.get_centroids(polygon_geom)
+
         for centroid in centroids:
-            hash_list.add(geohash.encode(centroid.y, centroid.x, 2))
+            hash_list.add(geohash.encode(centroid.y, centroid.x, self.geo_hash_dim))
 
         return hash_list
