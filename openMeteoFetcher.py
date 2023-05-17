@@ -26,8 +26,7 @@ def call_api(geohash_list):
 
         parameters = set_parameters()
         print(parameters)
-        base_url = "https://api.open-meteo.com/v1/forecast?latitude=" + str(lat) + "&longitude=" + str(
-            lon) + "&hourly=" + str(parameters)
+        base_url = "https://api.open-meteo.com/v1/forecast?latitude=" + str(lat) + "&longitude=" + str(lon) + "&hourly=" + str(parameters)
         response = requests.get(base_url)
         response = response.json()
         response_list.append(response)

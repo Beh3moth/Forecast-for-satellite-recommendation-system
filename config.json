@@ -41,8 +41,6 @@
     ],
     "granularityParameters": {
         "updateHoursInterval" : 3,
-        "granularity" : 15,
-        "geoHasDimension": 2,
         "maximumApiCalls" : 10000
     }
 }
