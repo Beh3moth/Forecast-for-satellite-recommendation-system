@@ -1,42 +1,40 @@
 import threading
+
+import pandas
 import pandas as pd
 from openMeteoFetcher import OpenMeteoFetcher
 import time
+import json
+import asyncio
 
 
 class MeteoThread:
-
-    data_frame = pd.DataFrame()
+    data_frame_list = []
     openMeteoFetcher = OpenMeteoFetcher()
     geohash_list = set()
+    update_hours_interval = 3
 
     def __init__(self):
-        pass
-
-    def run(self):
-
-        while True:
-
-            # condition for updating the dataframe
-            response = self.openMeteoFetcher.get_weather_forecast(self.geohash_list)[0]
-
-            for x in response['hourly']:
-                self.data_frame[str(x)] = response['hourly'][str(x)]
-            temporary_id = 1
-            self.data_frame['AOI_ID'] = temporary_id
-            self.data_frame['EventID'] = temporary_id
-        
-            time.sleep(3*60*60)
+        config_file = open('config.json')
+        config_parser = json.load(config_file)
+        self.update_hours_interval = config_parser["granularityParameters"]["updateHoursInterval"]
 
     def get_dataframe(self, geohash_list):
 
-        # check if there are some geohash that are not in the geohash list
         self.geohash_list = geohash_list
 
-        # start the thread
-        meteo_thread = threading.Thread(self.run())
+        for i in range(len(self.geohash_list)):
+            self.data_frame_list.append(pandas.DataFrame())
 
-        if not meteo_thread.is_alive():
-            meteo_thread.start()
+        # condition for updating the dataframe
+        response = self.openMeteoFetcher.get_weather_forecast(self.geohash_list)
 
-        return self.data_frame
+        for i in range(len(self.data_frame_list)):
+            for parameter in response[i]['hourly']:
+                self.data_frame_list[i][str(parameter)] = response[i]['hourly'][str(parameter)]
+                temporary_id = 1
+                self.data_frame_list[i]['AOI_ID'] = temporary_id
+                self.data_frame_list[i]['EventID'] = temporary_id
+
+        return self.data_frame_list
+
