@@ -1,49 +1,24 @@
 import threading
 import queue
-import time
+from interface import Interface
+from shapely import Polygon
 
-def async_job(input_queue, output_queue):
-    while True:
-        # Get input from the input queue
-        input_data = input_queue.get()
+lat_point_list = [50.854457, 50.924457, 52.518172, 50.072651, 48.853033]
+lon_point_list = [4.377184, 4.377184, 13.407759, 14.435935, 2.349553]
 
-        # Perform the asynchronous job
-        # Replace this with your actual job logic
-        time.sleep(2)  # Simulating some time-consuming task
+polygon_geom = Polygon(zip(lon_point_list, lat_point_list))
 
-        # Put the result in the output queue
-        output_queue.put(input_data + " processed")
+# Create a shared message queue
+message_queue = queue.Queue()
 
-def main():
-    # Create input and output queues
-    input_queue = queue.Queue()
-    output_queue = queue.Queue()
+interface = Interface()
+thread = threading.Thread(target=interface.get_weather_forecast, args=(polygon_geom, message_queue,))
+thread.start()
 
-    # Start the asynchronous job thread
-    job_thread = threading.Thread(target=async_job, args=(input_queue, output_queue))
-    job_thread.start()
 
-    # Submit input to the job thread asynchronously
-    input_queue.put("Data 1")
-    input_queue.put("Data 2")
-    input_queue.put("Data 3")
+def getForecast():
+    print(message_queue.get())
 
-    # Continue doing other work in the main thread
-    print("Main thread doing other work...")
 
-    # Retrieve the output from the job thread
-    result1 = output_queue.get()
-    result2 = output_queue.get()
-    result3 = output_queue.get()
-
-    # Print the results
-    print(result1)
-    print(result2)
-    print(result3)
-    return 13
-
-    # Wait for the job thread to finish
-    job_thread.join()
-
-if __name__ == "__main__":
-    main()
+getForecast()
+getForecast()

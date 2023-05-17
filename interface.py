@@ -12,7 +12,7 @@ class Interface:
     # I have specified the type of the aoi and the return's type as str, but it could be different or omitted.
     # There could be also the need of some kind of check on the aoi (it could be empty ecc).
     # this method is static because it doesn't modify any instance or class attributes.
-    def get_weather_forecast(aoi):
+    def get_weather_forecast(aoi, queue):
         # conversion in json?
         # json_aoi = json.loads(aoi)
         # Check on the aoi?
@@ -21,4 +21,4 @@ class Interface:
         controller = Controller()
 
         # Call the method of the controller that takes the aoi as input and returns the final output.
-        return controller.start_processing(aoi)
+        controller.start_processing(aoi, queue)
