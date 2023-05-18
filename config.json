@@ -48,5 +48,5 @@
         "updateHoursInterval" : 4,
         "maximumApiCalls" : 10000
     },
-    "geohash_dim": 4
+    "geohash_dim": 3
 }

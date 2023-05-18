@@ -22,21 +22,21 @@ class MeteoThread:
             for i in range(len(self.list_geohash_list[t])):
                 for parameter in response[i]['hourly']:
                     self.list_data_frame_list[t][i][str(parameter)] = response[i]['hourly'][str(parameter)]
-                    temporary_id = 1
-                    self.list_data_frame_list[t][i]['AOI_ID'] = temporary_id
-                    self.list_data_frame_list[t][i]['EventID'] = temporary_id
+                    # temporary_id = 1
+                    # self.list_data_frame_list[t][i]['AOI_ID'] = temporary_id
+                    # self.list_data_frame_list[t][i]['EventID'] = temporary_id
 
     def convert_dataframe_to_json(self):
 
         list_df_list = []
 
-        for list_dataframe in self.list_data_frame_list:
-            df_list = []
-            for dataframe in list_dataframe:
-                df_list.append(json.loads(dataframe.to_json()))
+        for i, list_dataframe in enumerate(self.list_data_frame_list):
+            df_list = {}
+            for j, dataframe in enumerate(list_dataframe):
+                df_list[list(list(self.list_geohash_list)[i])[j]] = json.loads(dataframe.to_json())
             list_df_list.append(df_list)
 
-        return str(json.dumps(list_df_list))
+        return list_df_list
 
     def waiter(self, input_queue, output_queue):
 
