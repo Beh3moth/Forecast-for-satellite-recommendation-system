@@ -6,6 +6,7 @@ from flask import Flask
 from flask import request
 import time
 from meteoThread import MeteoThread
+import asyncio
 
 app = Flask(__name__)
 
@@ -33,7 +34,14 @@ def upload_file():
 
 meteoThread = MeteoThread()
 
-thread = threading.Thread(target=meteoThread.get_dataframe_thread, args=(input_queue, output_queue))
-thread.start()
+# thread = threading.Thread(target=meteoThread.get_dataframe_thread, args=(input_queue, output_queue))
+# thread.start()
 
+# Create two threads, each executing a different function of the class
+waiter = threading.Thread(target=meteoThread.waiter, args=(input_queue, output_queue))
+updater = threading.Thread(target=meteoThread.updater)
+
+# Start the threads
+waiter.start()
+updater.start()
 
