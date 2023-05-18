@@ -2,8 +2,6 @@ import pandas
 from openMeteoFetcher import OpenMeteoFetcher
 import time
 import json
-import threading
-import asyncio
 
 
 class MeteoThread:
@@ -47,19 +45,6 @@ class MeteoThread:
 
         return str(json.dumps(list_df_list))
 
-    def get_dataframe_thread(self, input_queue, output_queue):
-
-        while True:
-
-            self.list_geohash_list = input_queue.get()
-            self.list_data_frame_list = []
-            for i in range(len(self.list_geohash_list)):
-                self.list_data_frame_list.append([])
-                for j in range(len(self.list_geohash_list[i])):
-                    self.list_data_frame_list[i].append(pandas.DataFrame())
-            self.update_dataframe()
-            output_queue.put(self.convert_dataframe_to_json())
-
     def waiter(self, input_queue, output_queue):
 
         print("waiter")
@@ -91,4 +76,4 @@ class MeteoThread:
             print("update")
             if self.list_data_frame_list and self.list_geohash_list:
                 self.update_dataframe()
-            time.sleep(5)
+            time.sleep(self.update_hours_interval * 60 * 60)
