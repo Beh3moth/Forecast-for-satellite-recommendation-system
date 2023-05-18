@@ -40,8 +40,6 @@ class MeteoThread:
 
     def waiter(self, input_queue, output_queue):
 
-        print("waiter")
-
         while True:
 
             list_hash_list = input_queue.get()
@@ -63,7 +61,6 @@ class MeteoThread:
 
         while True:
 
-            print("update")
             if self.list_data_frame_list and self.list_geohash_list:
                 self.update_dataframe()
             time.sleep(self.update_hours_interval * 60 * 60)

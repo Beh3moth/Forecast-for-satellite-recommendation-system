@@ -8,7 +8,7 @@ from meteoThread import MeteoThread
 
 app = Flask(__name__)
 
-with open('AOIs\#0001_AoiID_1.geojson') as f:
+with open('AOIs/#0001_AoiID_1.geojson') as f:
     data = json.load(f)
 
 interface = Interface()
