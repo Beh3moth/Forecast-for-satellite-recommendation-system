@@ -1,4 +1,3 @@
-import json
 from geoHashConverter import GeoHashConverter
 from meteoThread import MeteoThread
 

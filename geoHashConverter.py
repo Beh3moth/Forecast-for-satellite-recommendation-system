@@ -1,8 +1,6 @@
-import json
 import geohash
 from shapely.geometry import Polygon
 import numpy as np
-from shapely.geometry import MultiPolygon
 
 
 class GeoHashConverter:

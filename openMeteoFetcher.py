@@ -11,7 +11,7 @@ def set_parameters():
     parameter_list = str
 
     for parameter in config_parser["weatherParameters"]:
-        parameter_list = str(parameter_list) + str(parameter) + str(",")
+        parameter_list = str(parameter_list) + str(parameter) + ","
 
     parameter_list = parameter_list[:-1]
     parameter_list = parameter_list[13:]
