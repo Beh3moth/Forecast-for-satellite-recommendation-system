@@ -32,7 +32,6 @@ class MeteoThread:
                     self.list_data_frame_list[t][i]['AOI_ID'] = temporary_id
                     self.list_data_frame_list[t][i]['EventID'] = temporary_id
 
-
     def convert_dataframe_to_json(self):
 
         print("warning")
@@ -60,7 +59,6 @@ class MeteoThread:
                     self.list_data_frame_list[i].append(pandas.DataFrame())
             self.update_dataframe()
             output_queue.put(self.convert_dataframe_to_json())
-
 
         # while True:
         #

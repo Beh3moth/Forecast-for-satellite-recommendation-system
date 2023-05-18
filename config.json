@@ -47,5 +47,6 @@
     "granularityParameters": {
         "updateHoursInterval" : 3,
         "maximumApiCalls" : 10000
-    }
+    },
+    "geohash_dim": 3
 }

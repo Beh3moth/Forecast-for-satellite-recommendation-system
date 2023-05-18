@@ -1,14 +1,19 @@
 import geohash
 from shapely.geometry import Polygon
 import numpy as np
+import json
 
 
 class GeoHashConverter:
 
-    geo_hash_dim = 2
+    geo_hash_dim = 5
 
     def __init__(self):
-        pass
+        config_file = open('config.json')
+        config_parser = json.load(config_file)
+        self.geo_hash_dim = config_parser["geohash_dim"]
+        print("geohashdim:")
+        print(self.geo_hash_dim)
         # config_file = open('config.json')
         # config_parser = json.load(config_file)
 
