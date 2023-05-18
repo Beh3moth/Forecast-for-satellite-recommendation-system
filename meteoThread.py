@@ -21,19 +21,12 @@ class MeteoThread:
             response = self.openMeteoFetcher.get_weather_forecast(hashlist)
             for i in range(len(self.list_geohash_list[t])):
                 for parameter in response[i]['hourly']:
-                    # print("Measures:")
-                    # print(i)
-                    # print(len(self.list_data_frame_list[t][i]))
-                    # print(len(self.list_data_frame_list[t]))
                     self.list_data_frame_list[t][i][str(parameter)] = response[i]['hourly'][str(parameter)]
                     temporary_id = 1
                     self.list_data_frame_list[t][i]['AOI_ID'] = temporary_id
                     self.list_data_frame_list[t][i]['EventID'] = temporary_id
 
     def convert_dataframe_to_json(self):
-
-        print("warning")
-        print(len(self.list_data_frame_list))
 
         list_df_list = []
 
@@ -51,10 +44,7 @@ class MeteoThread:
 
         while True:
 
-            print("start waiter")
             list_hash_list = input_queue.get()
-            print("call received")
-            print(list_hash_list)
 
             # I have already the resource requested
             if self.list_geohash_list == list_hash_list and self.list_data_frame_list:

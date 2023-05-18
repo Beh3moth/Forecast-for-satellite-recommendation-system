@@ -1,6 +1,4 @@
 from controller import Controller
-import json
-from shapely import Polygon
 from shapely import MultiPolygon
 from shapely.geometry import shape
 
@@ -26,6 +24,5 @@ class Interface:
         # Create the controller
         controller = Controller()
 
-        print("siamo nell'interface")
         # Call the method of the controller that takes the aoi as input and returns the final output.
         controller.start_processing(multipolygon, queue)

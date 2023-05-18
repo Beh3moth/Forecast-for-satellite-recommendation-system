@@ -1,5 +1,4 @@
 import geohash
-from shapely.geometry import Polygon
 import numpy as np
 import json
 
@@ -12,14 +11,6 @@ class GeoHashConverter:
         config_file = open('config.json')
         config_parser = json.load(config_file)
         self.geo_hash_dim = config_parser["geohash_dim"]
-        print("geohashdim:")
-        print(self.geo_hash_dim)
-        # config_file = open('config.json')
-        # config_parser = json.load(config_file)
-
-    # def method_fra(self, polygon_geom):
-    #     rectangle = geopandas.GeoDataFrame(geometry=geopandas.GeoSeries(polygon_geom).envelope)
-    #     return granularity
 
     def convert_polygon_to_geohash(self, multipolygon):
 

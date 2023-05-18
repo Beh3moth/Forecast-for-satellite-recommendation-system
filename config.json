@@ -45,8 +45,8 @@
         "is_day"
     ],
     "granularityParameters": {
-        "updateHoursInterval" : 3,
+        "updateHoursInterval" : 4,
         "maximumApiCalls" : 10000
     },
-    "geohash_dim": 3
+    "geohash_dim": 4
 }
