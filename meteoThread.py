@@ -2,6 +2,8 @@ import pandas
 from openMeteoFetcher import OpenMeteoFetcher
 import time
 import json
+import threading
+import asyncio
 
 
 class MeteoThread:
@@ -27,17 +29,57 @@ class MeteoThread:
                 self.data_frame_list[i]['AOI_ID'] = temporary_id
                 self.data_frame_list[i]['EventID'] = temporary_id
 
-    def get_dataframe_thread(self, geohash_list, queue):
+    def convert_dataframe_to_json(self):
+
+        print("warning")
+        print(len(self.data_frame_list))
+
+        df_list = []
+
+        for dataframe in self.data_frame_list:
+            df_list.append(json.loads(dataframe.to_json()))
+
+        return str(df_list)
+
+    def get_dataframe_thread(self, input_queue, output_queue):
 
         while True:
 
-            # if the geohash_list of the class is null then initialize it and the dataframe list
-            if not self.geohash_list or not self.geohash_list == geohash_list:
-                self.geohash_list = geohash_list
-                for i in range(len(self.geohash_list)):
-                    self.data_frame_list.append(pandas.DataFrame())
-
+            self.geohash_list = input_queue.get()
+            self.data_frame_list = []
+            for i in range(len(self.geohash_list)):
+                self.data_frame_list.append(pandas.DataFrame())
             self.update_dataframe()
-            queue.put(self.data_frame_list)
+            output_queue.put(self.convert_dataframe_to_json())
 
-            time.sleep(5)
+
+        # while True:
+        #
+        #     print('ciclo iniziato')
+        #
+        #     geohash_list = set()
+        #
+        #     # expected to find the hash_list
+        #     if not input_queue.empty():
+        #         print("queue con qualcosa")
+        #         geohash_list = input_queue.get()
+        #     elif self.geohash_list:
+        #         print("update")
+        #         self.update_dataframe()
+        #
+        #     # if the geohash_list of the class is not null then initialize it and the dataframe list
+        #     if (geohash_list and not self.data_frame_list) or self.geohash_list != geohash_list:
+        #         print("hash mai vista")
+        #         self.geohash_list = geohash_list
+        #         self.data_frame_list = []
+        #         for i in range(len(self.geohash_list)):
+        #             self.data_frame_list.append(pandas.DataFrame())
+        #         self.update_dataframe()
+        #         print("messo nella queue")
+        #         output_queue.put(self.convert_dataframe_to_json())
+        #     elif self.geohash_list == geohash_list and self.data_frame_list:
+        #         print("hash già vista e ho già i dati")
+        #         output_queue.put(self.convert_dataframe_to_json())
+        #
+        #     print('a nanna')
+        #     time.sleep(10)
