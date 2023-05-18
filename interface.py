@@ -28,4 +28,4 @@ class Interface:
 
         print("siamo nell'interface")
         # Call the method of the controller that takes the aoi as input and returns the final output.
-        controller.start_processing(multipolygon[0], queue)
+        controller.start_processing(multipolygon, queue)

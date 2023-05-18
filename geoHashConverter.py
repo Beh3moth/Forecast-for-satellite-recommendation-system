@@ -16,19 +16,26 @@ class GeoHashConverter:
     #     rectangle = geopandas.GeoDataFrame(geometry=geopandas.GeoSeries(polygon_geom).envelope)
     #     return granularity
 
-    def convert_polygon_to_geohash(self, polygon_geom: Polygon):
+    def convert_polygon_to_geohash(self, multipolygon):
 
-        bounds = polygon_geom.bounds
-        lat_min = bounds[1]
-        lat_max = bounds[3]
-        lon_min = bounds[0]
-        lon_max = bounds[2]
+        super_set = []
 
-        geohash_list = set()
+        for polygon in multipolygon:
 
-        for lat in np.arange(lat_min, lat_max, 0.1):
-            for lon in np.arange(lon_min, lon_max, + 0.1):
-                geohash_value = geohash.encode(lat, lon, self.geo_hash_dim)
-                geohash_list.add(geohash_value)
+            if polygon.area:
 
-        return geohash_list
+                bounds = polygon.bounds
+                lat_min = bounds[1]
+                lat_max = bounds[3]
+                lon_min = bounds[0]
+                lon_max = bounds[2]
+
+                geohash_list = set()
+
+                for lat in np.arange(lat_min, lat_max, 0.1):
+                    for lon in np.arange(lon_min, lon_max, + 0.1):
+                        geohash_value = geohash.encode(lat, lon, self.geo_hash_dim)
+                        geohash_list.add(geohash_value)
+                super_set.append(geohash_list)
+
+        return super_set

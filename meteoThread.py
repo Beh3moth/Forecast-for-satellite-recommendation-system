@@ -7,9 +7,9 @@ import asyncio
 
 
 class MeteoThread:
-    data_frame_list = []
+    list_data_frame_list = []
     openMeteoFetcher = OpenMeteoFetcher()
-    geohash_list = set()
+    list_geohash_list = set()
     update_hours_interval = 3
 
     def __init__(self):
@@ -19,36 +19,45 @@ class MeteoThread:
 
     def update_dataframe(self):
 
-        # condition for updating the dataframe
-        response = self.openMeteoFetcher.get_weather_forecast(self.geohash_list)
+        for t, hashlist in enumerate(self.list_geohash_list):
+            response = self.openMeteoFetcher.get_weather_forecast(hashlist)
+            for i in range(len(self.list_geohash_list[t])):
+                for parameter in response[i]['hourly']:
+                    # print("Measures:")
+                    # print(i)
+                    # print(len(self.list_data_frame_list[t][i]))
+                    # print(len(self.list_data_frame_list[t]))
+                    self.list_data_frame_list[t][i][str(parameter)] = response[i]['hourly'][str(parameter)]
+                    temporary_id = 1
+                    self.list_data_frame_list[t][i]['AOI_ID'] = temporary_id
+                    self.list_data_frame_list[t][i]['EventID'] = temporary_id
 
-        for i in range(len(self.data_frame_list)):
-            for parameter in response[i]['hourly']:
-                self.data_frame_list[i][str(parameter)] = response[i]['hourly'][str(parameter)]
-                temporary_id = 1
-                self.data_frame_list[i]['AOI_ID'] = temporary_id
-                self.data_frame_list[i]['EventID'] = temporary_id
 
     def convert_dataframe_to_json(self):
 
         print("warning")
-        print(len(self.data_frame_list))
+        print(len(self.list_data_frame_list))
 
-        df_list = []
+        list_df_list = []
 
-        for dataframe in self.data_frame_list:
-            df_list.append(json.loads(dataframe.to_json()))
+        for list_dataframe in self.list_data_frame_list:
+            df_list = []
+            for dataframe in list_dataframe:
+                df_list.append(json.loads(dataframe.to_json()))
+            list_df_list.append(df_list)
 
-        return str(df_list)
+        return str(json.dumps(list_df_list))
 
     def get_dataframe_thread(self, input_queue, output_queue):
 
         while True:
 
-            self.geohash_list = input_queue.get()
-            self.data_frame_list = []
-            for i in range(len(self.geohash_list)):
-                self.data_frame_list.append(pandas.DataFrame())
+            self.list_geohash_list = input_queue.get()
+            self.list_data_frame_list = []
+            for i in range(len(self.list_geohash_list)):
+                self.list_data_frame_list.append([])
+                for j in range(len(self.list_geohash_list[i])):
+                    self.list_data_frame_list[i].append(pandas.DataFrame())
             self.update_dataframe()
             output_queue.put(self.convert_dataframe_to_json())
 
