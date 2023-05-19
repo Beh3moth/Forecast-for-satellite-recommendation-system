@@ -1,14 +1,14 @@
 import geohash
 import numpy as np
 import json
+from shapely.geometry import multipolygon
 
-
+    
 class GeoHashConverter:
 
     def __init__(self):
         config_file = open('config.json')
         config_parser = json.load(config_file)
-        self.geo_hash_dim = config_parser["geohash_dim"]   #TODO: remove this line. the geo-hash-dim should be set by callling the method setGeohashGranularity
 
         self.update_hours_interval = config_parser["granularityParameters"]["updateHoursInterval"]
 
@@ -19,7 +19,7 @@ class GeoHashConverter:
     # chosen granularity.
     # The higher the geohash granularity, the bigger the number of geohashes for a given AOI, the bigger the amount
     # of API calls to be made
-    def setGeohashGranularity(self, polygon_geom: Polygon):    #TODO: check if it has to take a multipolygon as input
+    def setGeohashGranularity(self, polygon_geom: multipolygon):    #TODO: check how to handle a multipolygon as input
 
         def computeTotalCallsPerDay(amountOfGeohashes: int):
 

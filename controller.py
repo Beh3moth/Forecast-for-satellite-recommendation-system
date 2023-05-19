@@ -10,5 +10,6 @@ class Controller:
         # the first thing to do is to convert the AOI in a geoHash string
         geohash_converter = GeoHashConverter()
 
+        geohash_converter.setGeohashGranularity(polygon_geom)
         list_list_geohash = geohash_converter.convert_polygon_to_geohash(polygon_geom)
         queue.put(list_list_geohash)
