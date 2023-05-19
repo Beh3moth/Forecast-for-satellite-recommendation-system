@@ -5,30 +5,26 @@ import json
 
 class GeoHashConverter:
 
-
->>>>>>> 1cb70a829acdf7730bf6acbfdc2eb19507557d60
     def __init__(self):
         config_file = open('config.json')
         config_parser = json.load(config_file)
-        self.geo_hash_dim = config_parser["geohash_dim"]
+        self.geo_hash_dim = config_parser["geohash_dim"]   #TODO: remove this line. the geo-hash-dim should be set by callling the method setGeohashGranularity
 
-<<<<<<< HEAD
+        self.update_hours_interval = config_parser["granularityParameters"]["updateHoursInterval"]
 
 
-    #method:  Takes the aoi Polygon as input and evaluates which is the best-fitting granularity of the geohash to be
-    # to be chosen, according to the maximum limit of API calls per day.
+
+    # method to set geoHashGranularity. Takes the aoi Polygon as input and evaluates which is the best-fitting granularity of the geohash
+    # to be chosen, according to the maximum limit of API calls per day, then sets the geo-hash-dim attribute to that
+    # chosen granularity.
     # The higher the geohash granularity, the bigger the number of geohashes for a given AOI, the bigger the amount
     # of API calls to be made
-    def setGeohashGranularity(self, polygon_geom: Polygon):
+    def setGeohashGranularity(self, polygon_geom: Polygon):    #TODO: check if it has to take a multipolygon as input
 
         def computeTotalCallsPerDay(amountOfGeohashes: int):
-            # Set the time frequency of weather updates in a day, as read from the json configuration file.
-            config_file = open('config.json')
-            config_parser = json.load(config_file)
 
-            hourlyFrequency = config_parser["updateHoursInterval"]
             # Compute the total amount of calls in a day  : a call for each geohash
-            totalCallsPerDay = amountOfGeohashes * (24 / hourlyFrequency)
+            totalCallsPerDay = amountOfGeohashes * (24 / self.update_hours_interval)
 
             return totalCallsPerDay
 
@@ -56,13 +52,12 @@ class GeoHashConverter:
             step -= 1
             amountOfGeohashes = aoiAreaSize / hashAreaWidths[step]
 
-    # return chosen granularity
-        return step
+    # set chosen granularity to the geo_hash_dim attribtue
+        self.geo_hash_dim = step
 
 
 
-    # To be changed according to the new approach :  "constructing the geoHash missing strings"
-    def convert_polygon_to_geohash(self, polygon_geom: Polygon):
+    #TODO: To be changed according to the new approach :  "constructing the geoHash missing strings"
     def convert_polygon_to_geohash(self, multipolygon):
 
         super_set = []
