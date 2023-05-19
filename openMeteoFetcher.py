@@ -11,7 +11,7 @@ def set_parameters():
     parameter_list = str
 
     for parameter in config_parser["weatherParameters"]:
-        parameter_list = str(parameter_list) + str(parameter) + str(",")
+        parameter_list = str(parameter_list) + str(parameter) + ","
 
     parameter_list = parameter_list[:-1]
     parameter_list = parameter_list[13:]
@@ -25,7 +25,8 @@ def call_api(geohash_list):
     for el in geohash_list:
         lat, lon = geohash.decode(el)
         parameters = set_parameters()
-        base_url = "https://api.open-meteo.com/v1/forecast?latitude=" + str(lat) + "&longitude=" + str(lon) + "&hourly=" + str(parameters)
+        base_url = ("https://api.open-meteo.com/v1/forecast?latitude=" + str(lat) + "&longitude="
+                    + str(lon) + "&hourly=" + str(parameters))
         response = requests.get(base_url)
         response = response.json()
         response_list.append(response)

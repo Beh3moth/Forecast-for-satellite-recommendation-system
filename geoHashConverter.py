@@ -1,17 +1,18 @@
-import json
 import geohash
-from shapely.geometry import Polygon
 import numpy as np
-from shapely.geometry import MultiPolygon
+import json
 
 
 class GeoHashConverter:
 
-    def __init__(self):
-        pass
-        # config_file = open('config.json')
-        # config_parser = json.load(config_file)
 
+>>>>>>> 1cb70a829acdf7730bf6acbfdc2eb19507557d60
+    def __init__(self):
+        config_file = open('config.json')
+        config_parser = json.load(config_file)
+        self.geo_hash_dim = config_parser["geohash_dim"]
+
+<<<<<<< HEAD
 
 
     #method:  Takes the aoi Polygon as input and evaluates which is the best-fitting granularity of the geohash to be
@@ -62,18 +63,26 @@ class GeoHashConverter:
 
     # To be changed according to the new approach :  "constructing the geoHash missing strings"
     def convert_polygon_to_geohash(self, polygon_geom: Polygon):
+    def convert_polygon_to_geohash(self, multipolygon):
 
-        bounds = polygon_geom.bounds
-        lat_min = bounds[1]
-        lat_max = bounds[3]
-        lon_min = bounds[0]
-        lon_max = bounds[2]
+        super_set = []
 
-        geohash_list = set()
+        for polygon in multipolygon:
 
-        for lat in np.arange(lat_min, lat_max, 0.1):
-            for lon in np.arange(lon_min, lon_max, + 0.1):
-                geohash_value = geohash.encode(lat, lon, self.geo_hash_dim)
-                geohash_list.add(geohash_value)
+            if polygon.area:
 
-        return geohash_list
+                bounds = polygon.bounds
+                lat_min = bounds[1]
+                lat_max = bounds[3]
+                lon_min = bounds[0]
+                lon_max = bounds[2]
+
+                geohash_list = set()
+
+                for lat in np.arange(lat_min, lat_max, 0.1):
+                    for lon in np.arange(lon_min, lon_max, + 0.1):
+                        geohash_value = geohash.encode(lat, lon, self.geo_hash_dim)
+                        geohash_list.add(geohash_value)
+                super_set.append(geohash_list)
+
+        return super_set

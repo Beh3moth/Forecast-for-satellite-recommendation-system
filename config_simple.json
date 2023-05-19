@@ -1,0 +1,26 @@
+{
+    "weatherParameters" : [
+        "temperature_2m",
+        "apparent_temperature",
+        "precipitation_probability",
+        "precipitation",
+        "rain",
+        "showers",
+        "snowfall",
+        "snow_depth",
+        "weathercode",
+        "cloudcover",
+        "cloudcover_low",
+        "cloudcover_mid",
+        "cloudcover_high",
+        "visibility",
+        "evapotranspiration",
+        "et0_fao_evapotranspiration",
+        "is_day"
+    ],
+    "granularityParameters": {
+        "updateHoursInterval" : 3,
+        "maximumApiCalls" : 10000
+    },
+    "geohash_dim": 3
+}
