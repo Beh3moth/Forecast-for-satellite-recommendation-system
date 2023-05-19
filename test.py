@@ -24,7 +24,7 @@ def add_event_info(json_file):
     return info
 
 
-@app.route('/', methods=['POST'])
+@app.route('/weatherforecast', methods=['POST'])
 def upload_file():
     try:
         file = request.get_json()
