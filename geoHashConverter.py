@@ -51,7 +51,7 @@ class GeoHashConverter:
         # print("areas: " + str(hash_area_widths))
 
         # First try with the 6th granularity
-        step = 9
+        step = 6
         amount_of_geohash = aoi_area_size / hash_area_widths[step]
 
         tot_calls = self.compute_total_calls_per_day(int(amount_of_geohash))
@@ -69,9 +69,14 @@ class GeoHashConverter:
         # print("step: " + str(step))
 
         # set chosen granularity to the geo_hash_dim attribute
-        self.geo_hash_dim = step
-        self.lat_step = hash_sizes[step][0]/110.574/10 ** 3
-        self.lon_step = hash_sizes[step][1]/111.320/10 ** 3
+        if step == 0:
+            self.geo_hash_dim = 3
+            self.lat_step = hash_sizes[step][0] / 110.574 / 10 ** 3
+            self.lon_step = hash_sizes[step][1] / 111.320 / 10 ** 3
+        else:
+            self.geo_hash_dim = step
+            self.lat_step = hash_sizes[step][0]/110.574/10 ** 3
+            self.lon_step = hash_sizes[step][1]/111.320/10 ** 3
         # print("lat dim: ", self.lat_step)
         # print("lon dim: ", self.lon_step)
 
