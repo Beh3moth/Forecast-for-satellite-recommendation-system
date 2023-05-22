@@ -18,6 +18,19 @@ class MeteoThread:
         config_parser = json.load(config_file)
         self.update_hours_interval = config_parser["granularityParameters"]["updateHoursInterval"]
 
+    @staticmethod
+    def add_is_day(dataframe):
+
+        dataframe["is_day"] = 1
+
+        # Define a condition
+        condition = pandas.to_datetime(dataframe["time"]).dt.hour > 18
+
+        # Update the selected positions with a new value
+        dataframe.loc[condition, 'is_day'] = 0
+
+        return dataframe
+
     def update_dataframe(self):
 
         for t, hashlist in enumerate(self.list_geohash_list):
@@ -25,6 +38,7 @@ class MeteoThread:
             for i in range(len(self.list_geohash_list[t])):
                 for parameter in response[i]['hourly']:
                     self.list_data_frame_list[t][i][str(parameter)] = response[i]['hourly'][str(parameter)]
+                    self.list_data_frame_list[t][i] = self.add_is_day(self.list_data_frame_list[t][i])
 
     @staticmethod
     def fill_nan_values_with_mean(dataframe):

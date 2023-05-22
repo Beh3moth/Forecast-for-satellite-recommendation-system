@@ -16,7 +16,7 @@ class GeoHashConverter:
 
     def compute_total_calls_per_day(self, amount_of_geohash: int):
 
-        # Compute the total amount of calls in a day  : a call for each geohash
+        # Compute the total amount of calls in a day : a call for each geohash
         total_calls_per_day = amount_of_geohash * (24 / self.update_hours_interval)
 
         return total_calls_per_day
@@ -25,7 +25,7 @@ class GeoHashConverter:
     # granularity of the geohash to be chosen, according to the maximum limit of API calls per day, then sets the
     # geo-hash-dim attribute to that chosen granularity. The higher the geohash granularity, the bigger the number of
     # geo hashes for a given AOI, the bigger the amount of API calls to be made
-    def set_geohash_granularity(self, set_polygon):  # TODO: check how to handle a multipolygon as input
+    def set_geohash_granularity(self, set_polygon):
 
         aoi_area_size = 0
 
@@ -49,7 +49,7 @@ class GeoHashConverter:
         # print("areas: " + str(hash_area_widths))
 
         # First try with the 6th granularity
-        step = 2
+        step = 6
         amount_of_geohash = aoi_area_size / hash_area_widths[step]
 
         tot_calls = self.compute_total_calls_per_day(int(amount_of_geohash))
@@ -78,7 +78,6 @@ class GeoHashConverter:
         # print("lat dim: ", self.lat_step)
         # print("lon dim: ", self.lon_step)
 
-    # TODO: To be changed according to the new approach :  "constructing the geoHash missing strings"
     def convert_polygon_to_geohash(self, multi_polygon):
 
         super_set = []
