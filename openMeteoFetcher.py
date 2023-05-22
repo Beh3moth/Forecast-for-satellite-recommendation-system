@@ -30,7 +30,7 @@ def call_api(geohash_list, day, month, year):
 
         historical_url = ("https://archive-api.open-meteo.com/v1/archive?latitude=" + str(lat) + "&longitude="
                           + str(lon) + "&start_date=" + year + "-" + month + "-" + day + "&end_date=" + year + "-"
-                          + month + "-" + str(int(day) + 7) + "&hourly=" + str(parameters))
+                          + month + "-" + str(int(day) + 6) + "&hourly=" + str(parameters))
 
         response = requests.get(historical_url)
         response = response.json()
