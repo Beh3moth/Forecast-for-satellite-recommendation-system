@@ -5,6 +5,7 @@ import json
 
 
 class MeteoThread:
+
     list_data_frame_list = []
     openMeteoFetcher = OpenMeteoFetcher()
     list_geohash_list = set()
@@ -22,9 +23,11 @@ class MeteoThread:
             for i in range(len(self.list_geohash_list[t])):
                 for parameter in response[i]['hourly']:
                     self.list_data_frame_list[t][i][str(parameter)] = response[i]['hourly'][str(parameter)]
-                    # temporary_id = 1
-                    # self.list_data_frame_list[t][i]['AOI_ID'] = temporary_id
-                    # self.list_data_frame_list[t][i]['EventID'] = temporary_id
+
+    @staticmethod
+    def fill_nan_values_with_mean(dataframe):
+        return dataframe.fillna(method='ffill')
+
 
     def convert_dataframe_to_json(self):
 
@@ -33,6 +36,7 @@ class MeteoThread:
         for i, list_dataframe in enumerate(self.list_data_frame_list):
             df_list = {}
             for j, dataframe in enumerate(list_dataframe):
+                dataframe = self.fill_nan_values_with_mean(dataframe)
                 df_list[list(list(self.list_geohash_list)[i])[j]] = json.loads(dataframe.to_json())
             list_df_list.append(df_list)
 

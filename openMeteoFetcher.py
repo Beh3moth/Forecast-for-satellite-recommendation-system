@@ -34,8 +34,7 @@ def call_api(geohash_list):
         response = requests.get(historical_url)
         response = response.json()
         response_list.append(response)
-
-        print(response)
+        print("api call")
 
     return response_list
 
