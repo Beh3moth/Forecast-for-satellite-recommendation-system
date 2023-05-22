@@ -18,7 +18,7 @@ def set_parameters():
     return parameter_list
 
 
-def call_api(geohash_list):
+def call_api(geohash_list, day, month, year):
     response_list = []
 
     for el in geohash_list:
@@ -29,12 +29,12 @@ def call_api(geohash_list):
         #             + str(lon) + "&hourly=" + str(parameters))
 
         historical_url = ("https://archive-api.open-meteo.com/v1/archive?latitude=" + str(lat) + "&longitude="
-                          + str(lon) + "&start_date=2023-05-03&end_date=2023-05-17&hourly=" + str(parameters))
+                          + str(lon) + "&start_date=" + year + "-" + month + "-" + day + "&end_date=" + year + "-"
+                          + month + "-" + str(int(day) + 7) + "&hourly=" + str(parameters))
 
         response = requests.get(historical_url)
         response = response.json()
         response_list.append(response)
-        print("api call")
 
     return response_list
 
@@ -45,6 +45,6 @@ class OpenMeteoFetcher:
         pass
 
     @staticmethod
-    def get_weather_forecast(geohash_list):
-        response = call_api(geohash_list)
+    def get_weather_forecast(geohash_list, day, month, year):
+        response = call_api(geohash_list, day, month, year)
         return response

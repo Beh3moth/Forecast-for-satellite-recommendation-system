@@ -15,13 +15,14 @@ input_queue = queue.Queue()
 output_queue = queue.Queue()
 
 
-def add_event_info(json_file):
-    info = {}
-    info["eventId"] = json_file["features"][0]["properties"]["eventId"]
-    info["eventType"] = json_file["features"][0]["properties"]["eventType"]
-    info["lat"] = json_file["features"][0]["properties"]["lat"]
-    info["long"] = json_file["features"][0]["properties"]["long"]
-    return info
+# def add_event_info(json_file):
+#     info = {}
+#     info["eventId"] = json_file["features"][0]["properties"]["eventId"]
+#     info["eventType"] = json_file["features"][0]["properties"]["eventType"]
+#     info["lat"] = json_file["features"][0]["properties"]["lat"]
+#     info["long"] = json_file["features"][0]["properties"]["long"]
+#     info["date"] = json_file["features"][0]["properties"]["long"]
+#     return info
 
 
 @app.route('/weatherforecast', methods=['POST'])
@@ -30,8 +31,8 @@ def upload_file():
         file = request.get_json()
         interface.get_weather_forecast(file, input_queue)
         output = output_queue.get()
-        info = add_event_info(file)
-        output.append(info)
+        # info = add_event_info(file)
+        # output.append(info)
         return str(json.dumps(output))
     except json.JSONDecodeError:
         return 'Invalid JSON file.', 400

@@ -1,11 +1,9 @@
 import geohash
 import numpy as np
 import json
-from itertools import chain
 
 
 class GeoHashConverter:
-
     update_hours_interval = 0
     geo_hash_dim = 0
     lat_step = 0.1
@@ -37,7 +35,7 @@ class GeoHashConverter:
 
         aoi_area_size = aoi_area_size * 111.4 * 111.13
 
-        print("The area is: " + str(aoi_area_size))
+        # print("The area is: " + str(aoi_area_size))
 
         # Granularity (width, height) in kilometers
         hash_sizes = [(0, 0), (5000000, 5000000), (1250000, 6250000), (156000, 156000), (39100, 19500), (4890, 4890),
@@ -46,27 +44,27 @@ class GeoHashConverter:
         hash_area_widths = []
 
         for pair in hash_sizes:
-            hash_area_widths.append((pair[0] * pair[1])/10 ** 6)
+            hash_area_widths.append((pair[0] * pair[1]) / 10 ** 6)
 
-        print("areas: " + str(hash_area_widths))
+        # print("areas: " + str(hash_area_widths))
 
         # First try with the 6th granularity
         step = 2
         amount_of_geohash = aoi_area_size / hash_area_widths[step]
 
         tot_calls = self.compute_total_calls_per_day(int(amount_of_geohash))
-        print("The number of total calls is:" + str(tot_calls))
+        # print("The number of total calls is:" + str(tot_calls))
         # Keep trying more coarse-grained geohash sizes until the amount of total calls is below 10000
 
         while tot_calls >= 10000 and step > 0:
-            print('iteration')
+            # print('iteration')
             step -= 1
-            print("iteration step: " + str(step))
+            # print("iteration step: " + str(step))
             amount_of_geohash = aoi_area_size / hash_area_widths[step]
             tot_calls = self.compute_total_calls_per_day(int(amount_of_geohash))
 
-        print("The amount of geohash is: " + str(amount_of_geohash))
-        print("step: " + str(step))
+        # print("The amount of geohash is: " + str(amount_of_geohash))
+        # print("step: " + str(step))
 
         # set chosen granularity to the geo_hash_dim attribute
         if step == 0:
@@ -75,10 +73,10 @@ class GeoHashConverter:
             self.lon_step = hash_sizes[step][1] / 111.320 / 10 ** 3
         else:
             self.geo_hash_dim = step
-            self.lat_step = hash_sizes[step][0]/110.574/10 ** 3
-            self.lon_step = hash_sizes[step][1]/111.320/10 ** 3
-        print("lat dim: ", self.lat_step)
-        print("lon dim: ", self.lon_step)
+            self.lat_step = hash_sizes[step][0] / 110.574 / 10 ** 3
+            self.lon_step = hash_sizes[step][1] / 111.320 / 10 ** 3
+        # print("lat dim: ", self.lat_step)
+        # print("lon dim: ", self.lon_step)
 
     # TODO: To be changed according to the new approach :  "constructing the geoHash missing strings"
     def convert_polygon_to_geohash(self, multi_polygon):
@@ -97,8 +95,8 @@ class GeoHashConverter:
 
                 geohash_list = set()
 
-                for lat in np.arange(lat_min, lat_max, self.lat_step/2):
-                    for lon in np.arange(lon_min, lon_max, self.lon_step/2):
+                for lat in np.arange(lat_min, lat_max, self.lat_step / 2):
+                    for lon in np.arange(lon_min, lon_max, self.lon_step / 2):
                         geohash_value = geohash.encode(lat, lon, self.geo_hash_dim)
                         geohash_list.add(geohash_value)
 
