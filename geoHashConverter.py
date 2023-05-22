@@ -2,8 +2,9 @@ import geohash
 import numpy as np
 import json
 from shapely.geometry import multipolygon
+import geopandas
 
-    
+
 class GeoHashConverter:
 
     def __init__(self):
@@ -12,6 +13,12 @@ class GeoHashConverter:
 
         self.update_hours_interval = config_parser["granularityParameters"]["updateHoursInterval"]
 
+    def compute_total_calls_per_day(amountOfGeohashes: int):
+
+        # Compute the total amount of calls in a day  : a call for each geohash
+        totalCallsPerDay = amountOfGeohashes * (24 / self.update_hours_interval)
+
+        return totalCallsPerDay
 
 
     # method to set geoHashGranularity. Takes the aoi Polygon as input and evaluates which is the best-fitting granularity of the geohash
@@ -19,14 +26,8 @@ class GeoHashConverter:
     # chosen granularity.
     # The higher the geohash granularity, the bigger the number of geohashes for a given AOI, the bigger the amount
     # of API calls to be made
-    def setGeohashGranularity(self, polygon_geom: multipolygon):    #TODO: check how to handle a multipolygon as input
+    def set_geohash_granularity(self, polygon_geom: multipolygon):    #TODO: check how to handle a multipolygon as input
 
-        def computeTotalCallsPerDay(amountOfGeohashes: int):
-
-            # Compute the total amount of calls in a day  : a call for each geohash
-            totalCallsPerDay = amountOfGeohashes * (24 / self.update_hours_interval)
-
-            return totalCallsPerDay
 
         rectangle = geopandas.GeoDataFrame(geometry=geopandas.GeoSeries(polygon_geom).envelope)
 
@@ -43,14 +44,15 @@ class GeoHashConverter:
             hashAreaWidths.append(pair[0]*pair[1])
 
         # First try with the 6th granularity
-        step = 6;
+        step = 6
         amountOfGeohashes = aoiAreaSize / hashAreaWidths[step]
 
-        totCalls = computeTotalCallsPerDay(amountOfGeohashes)
+        totCalls = compute_total_calls_per_day(amountOfGeohashes)
         # Keep trying more coarse-grained geohash sizes until the amount of total calls is below 10000
         while (totCalls >= 10000 and step > 0):
             step -= 1
             amountOfGeohashes = aoiAreaSize / hashAreaWidths[step]
+            totCalls = compute_total_calls_per_day(amountOfGeohashes)
 
     # set chosen granularity to the geo_hash_dim attribtue
         self.geo_hash_dim = step
