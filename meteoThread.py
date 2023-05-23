@@ -5,6 +5,7 @@ import json
 
 
 class MeteoThread:
+
     list_data_frame_list = []
     openMeteoFetcher = OpenMeteoFetcher()
     list_geohash_list = set()
@@ -65,9 +66,16 @@ class MeteoThread:
 
             list_hash_list = input_queue.get()
             info = input_queue.get()
-            self.day = info["day"]
-            self.month = info["month"]
-            self.year = info["year"]
+
+            info["date"] = info["features"][0]["properties"]["date"]
+            date = str(info["date"]).split(" ")[0]
+            day = date.split('-')[2]
+            month = date.split('-')[1]
+            year = date.split('-')[0]
+
+            self.day = day
+            self.month = month
+            self.year = year
 
             # I have already the resource requested
             if self.list_geohash_list == list_hash_list and self.list_data_frame_list:
