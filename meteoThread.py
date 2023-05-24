@@ -6,6 +6,7 @@ import json
 
 class MeteoThread:
 
+    # Handy initalization
     list_data_frame_list = []
     openMeteoFetcher = OpenMeteoFetcher()
     list_geohash_list = set()
