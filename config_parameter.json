@@ -1,5 +1,5 @@
 {
-    "weatherParameters" : [
+    "weatherParameters": [
         "temperature_2m",
         "relativehumidity_2m",
         "dewpoint_2m",
@@ -45,8 +45,8 @@
         "is_day"
     ],
     "granularityParameters": {
-        "updateHoursInterval" : 3,
-        "maximumApiCalls" : 10000
+        "updateHoursInterval": 3,
+        "maximumApiCalls": 10000
     },
     "geohash_dim": 3
 }
