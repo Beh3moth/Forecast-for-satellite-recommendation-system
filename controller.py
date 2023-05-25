@@ -1,6 +1,14 @@
-import json
 from geoHashConverter import GeoHashConverter
-from meteoThread import MeteoThread
+import json
+
+
+def modify_parameter(parameter_list):
+    with open("config_parameter.json") as json_file:
+        data = json.load(json_file)
+    data['weatherParameters'] = parameter_list
+    updated_json = json.dumps(data, indent=4)
+    with open('config_parameter.json', 'w') as file:
+        file.write(updated_json)
 
 
 class Controller:
@@ -8,18 +16,12 @@ class Controller:
         pass
 
     @staticmethod
-    def start_processing(polygon_geom):
-        
+    def start_processing(polygon_geom, queue, info, parameter_list):
         # the first thing to do is to convert the AOI in a geoHash string
         geohash_converter = GeoHashConverter()
 
-        hash_list = geohash_converter.convert_polygon_to_geohash(polygon_geom)
-        
-        print(hash_list)
-
-        # at this point we can ask for meteo data through the API interface
-
-        meteo_thread = MeteoThread()
-        output = meteo_thread.get_dataframe(hash_list)
-
-        return output
+        geohash_converter.set_geohash_granularity(polygon_geom)
+        list_list_geohash = geohash_converter.convert_polygon_to_geohash(polygon_geom)
+        queue.put(list_list_geohash)
+        queue.put(info)
+        modify_parameter(parameter_list)

@@ -1,71 +1,97 @@
-import json
-import geopandas
 import geohash
-from shapely.geometry import Polygon
+import numpy as np
+import json
 
 
 class GeoHashConverter:
-
-    num_rows = 5
-    num_cols = 5
-    geo_hash_dim = 2
+    # arbitrary initialization of attributes, later set in the code.
+    update_hours_interval = 0
+    geo_hash_dim = 0
+    lat_step = 0.1
+    lon_step = 0.1
 
     def __init__(self):
-        config_file = open('config.json')
+        config_file = open('config_simple.json')
         config_parser = json.load(config_file)
-        self.num_cols = config_parser["granularityParameters"]["granularity"]
-        self.num_rows = config_parser["granularityParameters"]["granularity"]
+        self.update_hours_interval = config_parser["granularityParameters"]["updateHoursInterval"]
 
-    # def method_fra(self, polygon_geom):
-    #     rectangle = geopandas.GeoDataFrame(geometry=geopandas.GeoSeries(polygon_geom).envelope)
-    #     return granularity
+    def compute_total_calls_per_day(self, amount_of_geohash: int):
 
-    def get_centroids(self, polygon_geom):
+        # Compute the total amount of calls in a day : a call for each geohash
+        total_calls_per_day = amount_of_geohash * (24 / self.update_hours_interval)
 
-        rectangle = geopandas.GeoDataFrame(geometry=geopandas.GeoSeries(polygon_geom).envelope)
+        return total_calls_per_day
 
-        # Define the number of rows and columns for the grid
-        num_rows = self.num_rows
-        num_cols = self.num_cols
+    # method to set geoHashGranularity. Takes the aoi Polygon as input and evaluates which is the best-fitting
+    # granularity of the geohash to be chosen, according to the maximum limit of API calls per day, then sets the
+    # geo_hash_dim attribute to that chosen granularity. The higher the geohash granularity, the bigger the number of
+    # geo hashes for a given AOI, the bigger the amount of API calls to be made
+    def set_geohash_granularity(self, set_polygon):
 
-        # Calculate the width and height of each sub-area
-        width = (rectangle.bounds['maxx'] - rectangle.bounds['minx']) / num_cols
-        height = (rectangle.bounds['maxy'] - rectangle.bounds['miny']) / num_rows
+        aoi_area_size = 0
 
-        # Create an empty list to store the sub-areas
-        sub_areas = []
+        for polygon in set_polygon:
+            if polygon.area:
+                aoi_area_size += polygon.area
 
-        # Iterate over the rows and columns to create the grid of sub-areas
-        for row in range(num_rows):
-            for col in range(num_cols):
-                minx = rectangle.bounds['minx'] + col * width
-                maxx = minx + width
-                miny = rectangle.bounds['miny'] + row * height
-                maxy = miny + height
-                sub_area_coords = [(minx, miny), (maxx, miny), (maxx, maxy), (minx, maxy)]
-                sub_areas.append(Polygon(sub_area_coords))
+        aoi_area_size = aoi_area_size * 111.4 * 111.13
 
-        # Create a GeoDataFrame with the sub-areas
-        sub_areas_gdf = geopandas.GeoDataFrame(geometry=sub_areas)
+        # Granularity (width, height) in meters
+        hash_sizes = [(0, 0), (5000000, 5000000), (1250000, 6250000), (156000, 156000), (39100, 19500), (4890, 4890),
+                      (1220, 610), (153, 153), (38.2, 19.1), (4.77, 4.77), (1.19, 0.59)]
 
-        # Perform the spatial intersection to obtain the divided sub-areas
-        divided_areas = geopandas.overlay(sub_areas_gdf, rectangle, how='intersection')
+        # creates list of area widths, in kilometers
+        hash_area_widths = []
 
-        centroids = set()
+        for pair in hash_sizes:
+            hash_area_widths.append((pair[0] * pair[1]) / 10 ** 6)
 
-        for index, row in divided_areas.iterrows():
-            if polygon_geom.intersects(row.geometry).bool():
-                centroids.add(row.geometry.centroid)
+        # First try with the 6th granularity
+        step = 6
+        amount_of_geohash = aoi_area_size / hash_area_widths[step]
 
-        return centroids
+        tot_calls = self.compute_total_calls_per_day(int(amount_of_geohash))
 
-    def convert_polygon_to_geohash(self, polygon_geom):
+        # Keep trying more coarse-grained geohash sizes until the amount of total calls is below 10000
 
-        hash_list = set()
+        while tot_calls >= 10000 and step > 0:
+            # print('iteration')
+            step -= 1
+            # print("iteration step: " + str(step))
+            amount_of_geohash = aoi_area_size / hash_area_widths[step]
+            tot_calls = self.compute_total_calls_per_day(int(amount_of_geohash))
 
-        centroids = self.get_centroids(polygon_geom)
+        # set chosen granularity to the geo_hash_dim attribute
+        if step == 0:
+            self.geo_hash_dim = 3
+            self.lat_step = hash_sizes[step][0] / 110.574 / 10 ** 3
+            self.lon_step = hash_sizes[step][1] / 111.320 / 10 ** 3
+        else:
+            self.geo_hash_dim = step
+            self.lat_step = hash_sizes[step][0] / 110.574 / 10 ** 3
+            self.lon_step = hash_sizes[step][1] / 111.320 / 10 ** 3
 
-        for centroid in centroids:
-            hash_list.add(geohash.encode(centroid.y, centroid.x, self.geo_hash_dim))
+    def convert_polygon_to_geohash(self, multi_polygon):
 
-        return hash_list
+        super_set = []
+
+        for polygon in multi_polygon:
+
+            if polygon.area:
+
+                bounds = polygon.bounds
+                lat_min = bounds[1]
+                lat_max = bounds[3]
+                lon_min = bounds[0]
+                lon_max = bounds[2]
+
+                geohash_list = set()
+
+                for lat in np.arange(lat_min, lat_max, self.lat_step / 2):
+                    for lon in np.arange(lon_min, lon_max, self.lon_step / 2):
+                        geohash_value = geohash.encode(lat, lon, self.geo_hash_dim)
+                        geohash_list.add(geohash_value)
+
+                super_set.append(geohash_list)
+
+        return super_set
