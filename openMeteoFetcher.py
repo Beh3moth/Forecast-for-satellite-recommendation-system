@@ -1,6 +1,7 @@
 import requests
 import geohash
 import json
+import pandas
 
 
 def set_parameters():
@@ -16,6 +17,29 @@ def set_parameters():
     parameter_list = parameter_list[13:]
 
     return parameter_list
+
+
+# Add an "is_day" column to the DataFrame and set its initial value to 1.
+def add_is_day(dataframe):
+
+    dataframe["is_day"] = 1
+
+    # Define a condition
+    condition = pandas.to_datetime(dataframe["time"]).dt.hour > 18
+
+    # Update the selected positions with a new value
+    dataframe.loc[condition, 'is_day'] = 0
+
+    return dataframe
+
+
+def convert_response_in_dataframe(response_list):
+    response_list = [response_list]
+    dataframe_list = []
+    for i, response in enumerate(response_list):
+        dataframe_list.append(pandas.DataFrame(response[0]['hourly']))
+        dataframe_list[i] = add_is_day(dataframe_list[i])
+    return dataframe_list
 
 
 def call_api(geohash_list, day, month, year):
@@ -47,4 +71,4 @@ class OpenMeteoFetcher:
     @staticmethod
     def get_weather_forecast(geohash_list, day, month, year):
         response = call_api(geohash_list, day, month, year)
-        return response
+        return convert_response_in_dataframe(response)

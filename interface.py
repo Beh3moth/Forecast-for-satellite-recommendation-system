@@ -1,6 +1,5 @@
 from controller import Controller
-from shapely import MultiPolygon
-from shapely.geometry import shape
+from input_parser import InputParser
 
 
 class Interface:
@@ -16,21 +15,7 @@ class Interface:
 
         # Create the controller
         controller = Controller()
+        input_parser = InputParser()
 
-        coordinates = json_aoi['features'][0]['geometry']['coordinates']
-
-        if json_aoi['features'][0]["geometry"]["type"] == "Polygon":
-            polygon = shape({"type": "Polygon", "coordinates": coordinates})
-            multipolygon = MultiPolygon([polygon])
-            multipolygon = multipolygon.geoms
-            controller.start_processing(multipolygon, queue, json_aoi, parameter_list)
-        else:
-            # Create a Shapely MultiPolygon object
-            multipolygon = shape({"type": "MultiPolygon", "coordinates": coordinates})
-            multipolygon = MultiPolygon(multipolygon)
-            multipolygon = multipolygon.geoms
-            # Call the method of the controller that takes the aoi as input and returns the final output.
-            controller.start_processing(multipolygon, queue, json_aoi, parameter_list)
-
-
-
+        # Call the method of the controller that takes the aoi as input and returns the final output.
+        controller.start_processing(input_parser.get_multipolygon(json_aoi), queue, json_aoi, parameter_list)

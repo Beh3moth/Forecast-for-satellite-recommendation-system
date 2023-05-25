@@ -6,7 +6,6 @@ from input_parser import InputParser
 
 
 class MeteoThread:
-
     # Handy initialization
     list_data_frame_list = []
     openMeteoFetcher = OpenMeteoFetcher()
@@ -21,32 +20,20 @@ class MeteoThread:
         config_parser = json.load(config_file)
         self.update_hours_interval = config_parser["granularityParameters"]["updateHoursInterval"]
 
-    @staticmethod
-    def add_is_day(dataframe):
-
-        dataframe["is_day"] = 1
-
-        # Define a condition
-        condition = pandas.to_datetime(dataframe["time"]).dt.hour > 18
-
-        # Update the selected positions with a new value
-        dataframe.loc[condition, 'is_day'] = 0
-
-        return dataframe
-
+    # Update the data frames with weather forecast information.
     def update_dataframe(self):
 
         for t, hashlist in enumerate(self.list_geohash_list):
-            response = self.openMeteoFetcher.get_weather_forecast(hashlist, self.day, self.month, self.year)
-            for i in range(len(self.list_geohash_list[t])):
-                for parameter in response[i]['hourly']:
-                    self.list_data_frame_list[t][i][str(parameter)] = response[i]['hourly'][str(parameter)]
-                    self.list_data_frame_list[t][i] = self.add_is_day(self.list_data_frame_list[t][i])
+            response_list = self.openMeteoFetcher.get_weather_forecast(hashlist, self.day, self.month, self.year)
+            for i, response in enumerate(response_list):
+                self.list_data_frame_list[t][i] = response
 
+    # Fill NaN values in the DataFrame with the mean of the previous values.
     @staticmethod
     def fill_nan_values_with_mean(dataframe):
         return dataframe.fillna(method='ffill')
 
+    # Convert the data frames to JSON format so that it can be returned as output of the POST request.
     def convert_dataframe_to_json(self, info):
 
         list_df_list = []
@@ -62,6 +49,18 @@ class MeteoThread:
 
         return list_df_list
 
+    # Re-initialize the list of lists of dataframe with Null values so that it can be filled later.
+    def re_initialize_dataframes(self, list_hash_list):
+
+        self.list_geohash_list = list_hash_list
+        self.list_data_frame_list = []
+
+        for i in range(len(self.list_geohash_list)):
+            self.list_data_frame_list.append([])
+            for j in range(len(self.list_geohash_list[i])):
+                self.list_data_frame_list[i].append(pandas.DataFrame())
+
+    # Function used as thread number 1 that has to wait for input from the input_queue and process it.
     def waiter(self, input_queue, output_queue):
 
         while True:
@@ -73,20 +72,19 @@ class MeteoThread:
 
             self.day, self.month, self.year = input_fetcher.get_date(input_aoi)
 
-            # I have already the resource requested
+            # Case in which there is already the dataframe requested.
+            # It is the case in which the hashlist requested is the same of the hashlist saved and the
+            # list of lists of dataframe is not empty.
             if self.list_geohash_list == list_hash_list and self.list_data_frame_list:
                 output_queue.put(self.convert_dataframe_to_json(input_aoi))
-            # I have to request data to the api
+            # Case in which I have to ask data to the api to initialize the dataframes.
             else:
-                self.list_geohash_list = list_hash_list
-                self.list_data_frame_list = []
-                for i in range(len(self.list_geohash_list)):
-                    self.list_data_frame_list.append([])
-                    for j in range(len(self.list_geohash_list[i])):
-                        self.list_data_frame_list[i].append(pandas.DataFrame())
+                self.re_initialize_dataframes(list_hash_list)
                 self.update_dataframe()
                 output_queue.put(self.convert_dataframe_to_json(input_aoi))
 
+    # Function used as thread number 2 that has to periodically update the data frames. The update interval is
+    # an attribute of the class.
     def updater(self):
 
         while True:
