@@ -2,11 +2,12 @@ import pandas
 from openMeteoFetcher import OpenMeteoFetcher
 import time
 import json
+from input_parser import InputParser
 
 
 class MeteoThread:
 
-    # Handy initalization
+    # Handy initialization
     list_data_frame_list = []
     openMeteoFetcher = OpenMeteoFetcher()
     list_geohash_list = set()
@@ -65,22 +66,17 @@ class MeteoThread:
 
         while True:
 
+            input_fetcher = InputParser()
+
             list_hash_list = input_queue.get()
-            info = input_queue.get()
+            input_aoi = input_queue.get()
 
-            info["date"] = info["features"][0]["properties"]["date"]
-            date = str(info["date"]).split(" ")[0]
-            day = date.split('-')[2]
-            month = date.split('-')[1]
-            year = date.split('-')[0]
-
-            self.day = day
-            self.month = month
-            self.year = year
+            self.day, self.month, self.year = input_fetcher.get_date(input_aoi)
 
             # I have already the resource requested
             if self.list_geohash_list == list_hash_list and self.list_data_frame_list:
-                output_queue.put(self.convert_dataframe_to_json(info))
+                output_queue.put(self.convert_dataframe_to_json(input_aoi))
+            # I have to request data to the api
             else:
                 self.list_geohash_list = list_hash_list
                 self.list_data_frame_list = []
@@ -89,7 +85,7 @@ class MeteoThread:
                     for j in range(len(self.list_geohash_list[i])):
                         self.list_data_frame_list[i].append(pandas.DataFrame())
                 self.update_dataframe()
-                output_queue.put(self.convert_dataframe_to_json(info))
+                output_queue.put(self.convert_dataframe_to_json(input_aoi))
 
     def updater(self):
 
