@@ -11,10 +11,9 @@ class GeoHashConverter:
     lon_step = 0.1
 
     def __init__(self):
-        config_file = open('config.json')
+        config_file = open('config_simple.json')
         config_parser = json.load(config_file)
         self.update_hours_interval = config_parser["granularityParameters"]["updateHoursInterval"]
-
 
     def compute_total_calls_per_day(self, amount_of_geohash: int):
 
