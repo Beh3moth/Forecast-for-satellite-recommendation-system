@@ -4,6 +4,7 @@ import json
 
 
 class GeoHashConverter:
+    # arbitrary initialization of attributes, later set in the code.
     update_hours_interval = 0
     geo_hash_dim = 0
     lat_step = 0.1
@@ -14,6 +15,7 @@ class GeoHashConverter:
         config_parser = json.load(config_file)
         self.update_hours_interval = config_parser["granularityParameters"]["updateHoursInterval"]
 
+
     def compute_total_calls_per_day(self, amount_of_geohash: int):
 
         # Compute the total amount of calls in a day : a call for each geohash
@@ -23,7 +25,7 @@ class GeoHashConverter:
 
     # method to set geoHashGranularity. Takes the aoi Polygon as input and evaluates which is the best-fitting
     # granularity of the geohash to be chosen, according to the maximum limit of API calls per day, then sets the
-    # geo-hash-dim attribute to that chosen granularity. The higher the geohash granularity, the bigger the number of
+    # geo_hash_dim attribute to that chosen granularity. The higher the geohash granularity, the bigger the number of
     # geo hashes for a given AOI, the bigger the amount of API calls to be made
     def set_geohash_granularity(self, set_polygon):
 
@@ -35,10 +37,11 @@ class GeoHashConverter:
 
         aoi_area_size = aoi_area_size * 111.4 * 111.13
 
-        # Granularity (width, height) in kilometers
+        # Granularity (width, height) in meters
         hash_sizes = [(0, 0), (5000000, 5000000), (1250000, 6250000), (156000, 156000), (39100, 19500), (4890, 4890),
                       (1220, 610), (153, 153), (38.2, 19.1), (4.77, 4.77), (1.19, 0.59)]
 
+        # creates list of area widths, in kilometers
         hash_area_widths = []
 
         for pair in hash_sizes:
