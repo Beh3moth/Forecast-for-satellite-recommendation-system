@@ -2,10 +2,11 @@ import requests
 import geohash
 import json
 import pandas
+from logger import Logger
 
 
 def set_parameters():
-    config_file = open('config_simple.json')
+    config_file = open('Memory/config_simple.json')
     config_parser = json.load(config_file)
 
     parameter_list = str
@@ -44,6 +45,7 @@ def convert_response_in_dataframe(response_list):
 
 def call_api(geohash_list, day, month, year):
     response_list = []
+    logger = Logger()
 
     for el in geohash_list:
         lat, lon = geohash.decode(el)
@@ -55,6 +57,8 @@ def call_api(geohash_list, day, month, year):
         historical_url = ("https://archive-api.open-meteo.com/v1/archive?latitude=" + str(lat) + "&longitude="
                           + str(lon) + "&start_date=" + year + "-" + month + "-" + day + "&end_date=" + year + "-"
                           + month + "-" + str(int(day) + 6) + "&hourly=" + str(parameters))
+
+        logger.add_call()
 
         response = requests.get(historical_url)
         response = response.json()

@@ -16,7 +16,7 @@ class MeteoThread:
     year = "2023"
 
     def __init__(self):
-        config_file = open('config.json')
+        config_file = open('Memory/config.json')
         config_parser = json.load(config_file)
         self.update_hours_interval = config_parser["granularityParameters"]["updateHoursInterval"]
 
