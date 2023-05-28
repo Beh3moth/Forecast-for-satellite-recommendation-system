@@ -11,7 +11,7 @@ class GeoHashConverter:
     lon_step = 0.1
 
     def __init__(self):
-        config_file = open('Memory/config_simple.json')
+        config_file = open('../Memory/config_simple.json')
         config_parser = json.load(config_file)
         self.update_hours_interval = config_parser["granularityParameters"]["updateHoursInterval"]
 

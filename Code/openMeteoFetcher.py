@@ -6,7 +6,7 @@ from logger import Logger
 
 
 def set_parameters():
-    config_file = open('Memory/config_simple.json')
+    config_file = open('../Memory/config_simple.json')
     config_parser = json.load(config_file)
 
     parameter_list = str

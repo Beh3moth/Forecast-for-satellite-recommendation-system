@@ -3,11 +3,11 @@ import json
 
 
 def modify_parameter(parameter_list):
-    with open("Memory/config_parameter.json") as json_file:
+    with open("../Memory/config_parameter.json") as json_file:
         data = json.load(json_file)
     data['weatherParameters'] = parameter_list
     updated_json = json.dumps(data, indent=4)
-    with open('Memory/config_parameter.json', 'w') as file:
+    with open('../Memory/config_parameter.json', 'w') as file:
         file.write(updated_json)
 
 
