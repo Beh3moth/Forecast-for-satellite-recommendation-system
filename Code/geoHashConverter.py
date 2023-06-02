@@ -12,6 +12,8 @@ class GeoHashConverter:
     lat_step = 0.1
     lon_step = 0.1
 
+    current_calls = 0
+
     # Get the current time and extract the current hour of the day
     current_time = str(datetime.datetime.now())
     current_hour = int(current_time[11:13])
@@ -25,14 +27,18 @@ class GeoHashConverter:
         self.update_hours_interval = config_parser["granularityParameters"]["updateHoursInterval"]
         self.daily_calls_threshold = config_parser["granularityParameters"]["maximumApiCalls"]
 
+        # Read the JSON logging file
+        data = json.load(open("../Memory/calls_log.json"))
 
+        # get the current amount of calls in the log
+        self.current_calls = data['counter']
 
-    def compute_total_calls_per_day(self, amount_of_geohash: int):
+    def compute_calls_until_endofday(self, amount_of_geohash: int):
 
         # Compute the total amount of calls expected to be made from now to the end of the day (00:00)
-        total_calls_per_day = amount_of_geohash * (24 / self.update_hours_interval)    #TODO: compute actual hours left wrt current time
+        calls_until_endofday = amount_of_geohash * ((24 - self.current_hour) / self.update_hours_interval)
 
-        return total_calls_per_day
+        return calls_until_endofday
 
     # method to set geoHashGranularity. Takes the aoi Polygon as input and evaluates which is the best-fitting
     # granularity of the geohash to be chosen, according to the maximum limit of API calls per day, then sets the
@@ -62,17 +68,16 @@ class GeoHashConverter:
         step = 6
         amount_of_geohash = aoi_area_size / hash_area_widths[step]
 
-        # TODO: take into account the actual calls left
-        tot_calls = self.compute_total_calls_per_day(int(amount_of_geohash))
+        tot_calls = self.current_calls + self.compute_calls_until_endofday(int(amount_of_geohash))
 
         # Keep trying more coarse-grained geohash sizes until the amount of total calls is below 10000
 
-        while tot_calls >= 10000 and step > 0:   #TODO: take into account the actual calls left
+        while tot_calls >= 10000 and step > 0:  
             # print('iteration')
             step -= 1
             # print("iteration step: " + str(step))
             amount_of_geohash = aoi_area_size / hash_area_widths[step]
-            tot_calls = self.compute_total_calls_per_day(int(amount_of_geohash))
+            tot_calls = self.current_calls + self.compute_calls_until_endofday(int(amount_of_geohash))
 
         # set chosen granularity to the geo_hash_dim attribute
         if step == 0:
