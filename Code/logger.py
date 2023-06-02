@@ -4,6 +4,8 @@ import datetime
 
 class Logger:
 
+
+
     @staticmethod
     def add_call():
         # Read the JSON file

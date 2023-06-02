@@ -1,24 +1,36 @@
 import geohash
 import numpy as np
 import json
+import datetime
 
 
 class GeoHashConverter:
     # arbitrary initialization of attributes, later set in the code.
     update_hours_interval = 0
+    daily_calls_threshold = 0
     geo_hash_dim = 0
     lat_step = 0.1
     lon_step = 0.1
+
+    # Get the current time and extract the current hour of the day
+    current_time = str(datetime.datetime.now())
+    current_hour = int(current_time[11:13])
+
+
+
 
     def __init__(self):
         config_file = open('../Memory/config_simple.json')
         config_parser = json.load(config_file)
         self.update_hours_interval = config_parser["granularityParameters"]["updateHoursInterval"]
+        self.daily_calls_threshold = config_parser["granularityParameters"]["maximumApiCalls"]
+
+
 
     def compute_total_calls_per_day(self, amount_of_geohash: int):
 
-        # Compute the total amount of calls in a day : a call for each geohash
-        total_calls_per_day = amount_of_geohash * (24 / self.update_hours_interval)
+        # Compute the total amount of calls expected to be made from now to the end of the day (00:00)
+        total_calls_per_day = amount_of_geohash * (24 / self.update_hours_interval)    #TODO: compute actual hours left wrt current time
 
         return total_calls_per_day
 
@@ -50,11 +62,12 @@ class GeoHashConverter:
         step = 6
         amount_of_geohash = aoi_area_size / hash_area_widths[step]
 
+        # TODO: take into account the actual calls left
         tot_calls = self.compute_total_calls_per_day(int(amount_of_geohash))
 
         # Keep trying more coarse-grained geohash sizes until the amount of total calls is below 10000
 
-        while tot_calls >= 10000 and step > 0:
+        while tot_calls >= 10000 and step > 0:   #TODO: take into account the actual calls left
             # print('iteration')
             step -= 1
             # print("iteration step: " + str(step))
